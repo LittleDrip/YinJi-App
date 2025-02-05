@@ -1,0 +1,140 @@
+佳能（佳影留真）
+在天地之间，绘就绚丽画卷。
+尼康（尼彩映世）
+于光影之中，捕捉世界精彩。
+索尼（索尼精工）
+在科技浪潮，引领影像创新。
+徕卡（徕镜传奇）
+于岁月长河，留下经典影像。
+富士（富士胶韵）
+在时光长廊，留下复古影像。
+奥林巴斯（奥林精巧）
+于微观世界，展现精巧之美。
+哈苏（哈苏中画）
+在艺术殿堂，铸就影像传奇。
+
+
+
+
+<template>
+	<view class="container">
+		<uni-nav-bar :fixed="true" :border="false" status-bar title="Topics" />
+		<view class="content">
+			<view class="section" v-for="(section, index) in sections" :key="index">
+				<text class="section-title">{{ section.title }}</text>
+				<br>
+				<text class="section-subtitle">{{ section.subtitle }}</text>
+				<scroll-view v-if="section.type === 'phone'" scroll-x="true" class="image-scroll">
+					<image v-for="(image, imgIndex) in section.images" :key="imgIndex" :src="image"
+						class="image-item" />
+
+				</scroll-view>
+				<scroll-view v-else-if="section.type === 'pc'" scroll-x="true" class="image-scroll pc-scroll">
+					<image v-for="(image, imgIndex) in section.images" :key="imgIndex" :src="image"
+						class="image-item pc-image" />
+				</scroll-view>
+			</view>
+		</view>
+		<view class="edgeInsetBottom"></view>
+		<view class="fixedView"></view>
+	</view>
+</template>
+
+<script setup>
+import uniIcons from '@/uni_modules/uni-icons/components/uni-icons/uni-icons.vue'
+import uniNavBar from '@/uni_modules/uni-nav-bar/components/uni-nav-bar/uni-nav-bar.vue'
+import { ref } from 'vue';
+
+const sections = ref([
+	{
+		title: '富士胶韵',
+		subtitle: '在时光长廊，留下复古影像。',
+		type: 'phone',
+		images: [
+			'https://haowallpaper.com/link/common/file/getCroppingImg/15565917146681664',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/5daf14db79a4176a7875155879eaf76d',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/c141f81b305795fd463216030ecd244d',
+
+		]
+	},
+	{
+		title: '徕镜传奇',
+		subtitle: '于岁月长河，留下经典影像。',
+		type: 'pc',
+		images: [
+			'https://haowallpaper.com/link/common/file/getCroppingImg/16144648753630592',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/16144648753630592',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/16144648753630592',
+		]
+	}
+]);
+</script>
+
+<style lang="scss">
+.container {
+	font-family: 'MiSans';
+}
+
+.content {
+	padding: 20rpx;
+	display: flex;
+	flex-direction: column;
+
+}
+
+.section {
+	margin-bottom: 40rpx;
+}
+
+.section-title {
+	font-size: 36rpx;
+	font-weight: bold;
+	margin-bottom: 10rpx;
+}
+
+.section-subtitle {
+	font-size: 28rpx;
+	color: #888;
+	margin-bottom: 20rpx;
+}
+
+.image-scroll {
+	white-space: nowrap;
+	width: 100%;
+	display: flex; // 让图片横向排列
+	overflow-x: auto;
+
+
+}
+
+// 电脑壁纸样式
+.pc-scroll {
+	.pc-image {
+		height: 380rpx;
+		width: 80%; // 电脑壁纸使用较宽的宽度
+		margin-right: 20rpx;
+		border-radius: 12rpx;
+		object-fit: cover;
+	}
+}
+
+.image-item {
+	height: 500rpx;
+	width: 40%;
+	margin-right: 10rpx;
+	border-radius: 12rpx;
+}
+
+.edgeInsetBottom {
+	width: 750rpx;
+	height: var(--window-bottom);
+	background-color: #FFFFFF;
+}
+
+.fixedView {
+	position: fixed;
+	width: 750rpx;
+	height: 30px;
+	bottom: var(--window-bottom);
+}
+</style>

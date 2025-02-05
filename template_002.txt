@@ -1,0 +1,249 @@
+<template>
+	<view class="container">
+		<uni-nav-bar :fixed="true" :border="false" status-bar title="Topics" />
+		<view class="content">
+			<view class="section" v-for="(section, index) in sections" :key="index">
+				<text class="section-title">{{ section.title }}</text>
+				<br>
+				<text class="section-subtitle">{{ section.subtitle }}</text>
+				<scroll-view v-if="section.type === 'phone'" scroll-x="true" class="image-scroll">
+					<view class="photo-frame" v-for="(image, imgIndex) in section.images" :key="imgIndex">
+						<view class="image-container">
+							<image :src="image" class="image-content" />
+						</view>
+						<view class="frame-footer">
+							<text class="watermark-line">FUJIFILM</text>
+							<text class="watermark-line">Shot on X-T5</text>
+							<text class="watermark-line">XF33mmF1.4R LM WR</text>
+						</view>
+					</view>
+				</scroll-view>
+				<scroll-view v-else-if="section.type === 'pc'" scroll-x="true" class="image-scroll pc-scroll">
+					<view class="photo-frame" v-for="(image, imgIndex) in section.images" :key="imgIndex">
+						<view class="image-container pc-container">
+							<image :src="image" class="image-content pc-content" />
+						</view>
+						<view class="frame-footer">
+							<text class="watermark-line">FUJIFILM</text>
+							<text class="watermark-line">Shot on X-T5</text>
+							<text class="watermark-line">XF33mmF1.4R LM WR</text>
+						</view>
+					</view>
+				</scroll-view>
+			</view>
+		</view>
+		<view class="edgeInsetBottom"></view>
+		<view class="fixedView"></view>
+	</view>
+</template>
+
+<script setup>
+import uniIcons from '@/uni_modules/uni-icons/components/uni-icons/uni-icons.vue'
+import uniNavBar from '@/uni_modules/uni-nav-bar/components/uni-nav-bar/uni-nav-bar.vue'
+import { ref } from 'vue';
+
+const sections = ref([
+	{
+		title: '富士胶韵',
+		subtitle: '在时光长廊，留下复古影像。',
+		type: 'phone',
+		images: [
+			'https://haowallpaper.com/link/common/file/getCroppingImg/15565917146681664',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/5daf14db79a4176a7875155879eaf76d',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/c141f81b305795fd463216030ecd244d',
+
+		]
+	},
+	{
+		title: '徕镜传奇',
+		subtitle: '于岁月长河，留下经典影像。',
+		type: 'pc',
+		images: [
+			'https://haowallpaper.com/link/common/file/getCroppingImg/16144648753630592',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/16144648753630592',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/16144648753630592',
+		]
+	}
+]);
+</script>
+
+<style lang="scss">
+.container {
+	font-family: 'MiSans';
+}
+
+.content {
+	padding: 20rpx;
+	display: flex;
+	flex-direction: column;
+
+}
+
+.section {
+	margin-bottom: 40rpx;
+}
+
+.section-title {
+	font-size: 36rpx;
+	font-weight: bold;
+	margin-bottom: 10rpx;
+}
+
+.section-subtitle {
+	font-size: 28rpx;
+	color: #888;
+	margin-bottom: 20rpx;
+}
+
+.image-scroll {
+	white-space: nowrap;
+	width: 100%;
+	overflow-x: auto;
+
+	.image-container {
+		display: inline-block;
+		margin-right: 10rpx;
+
+		.image-wrapper {
+			position: relative;
+			background-color: white; // 白色背景
+			padding: 10rpx; // 白框宽度
+			border-radius: 12rpx; // 圆角
+			box-shadow: 0 4rpx 8rpx rgba(0, 0, 0, 0.1); // 可选：添加阴影
+
+			.image-item {
+				display: block;
+				height: 500rpx;
+				width: 40vw;
+				border-radius: 8rpx; // 图片圆角
+			}
+
+			.watermark {
+				position: absolute;
+				bottom: 10rpx; // 调整水印位置到白框底部
+				left: 10rpx; // 水印靠左对齐
+				right: 10rpx; // 水印靠右对齐
+				text-align: center; // 水印居中
+				color: rgba(0, 0, 0, 0.8); // 水印文字颜色
+				font-family: Arial, sans-serif;
+				pointer-events: none;
+
+				.watermark-brand {
+					font-size: 24rpx;
+					font-weight: bold;
+					display: block;
+				}
+
+				.watermark-camera {
+					font-size: 20rpx;
+					display: block;
+					margin-top: 4rpx;
+				}
+
+				.watermark-lens {
+					font-size: 18rpx;
+					display: block;
+					margin-top: 2rpx;
+					color: rgba(0, 0, 0, 0.7);
+				}
+			}
+		}
+	}
+}
+
+.photo-frame {
+	display: inline-block;
+	background: white;
+	border-radius: 12rpx;
+	margin-right: 20rpx;
+	box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.1);
+
+	// 手机样式
+	.image-container {
+		padding: 12rpx;
+
+		.image-content {
+			display: block;
+			height: 500rpx;
+			width: 40vw;
+			border-radius: 8rpx;
+		}
+	}
+
+	// 白底水印区域
+	.frame-footer {
+		padding: 16rpx 20rpx;
+		// border-top: 2rpx solid #eee;
+
+		.watermark-line {
+			display: block;
+			font-family: Arial, sans-serif;
+			text-align: center;
+
+			&:nth-child(1) {
+				font-size: 24rpx;
+				font-weight: bold;
+				color: #333;
+			}
+
+			&:nth-child(2) {
+				font-size: 20rpx;
+				color: #666;
+				margin-top: 4rpx;
+			}
+
+			&:nth-child(3) {
+				font-size: 18rpx;
+				color: #888;
+				margin-top: 2rpx;
+			}
+		}
+	}
+}
+
+// 电脑样式
+.pc-scroll {
+	.photo-frame {
+		.pc-container {
+			padding: 20rpx;
+
+			.pc-content {
+				height: 380rpx;
+				width: 80vw;
+				// width: 100%;
+			}
+		}
+
+		.frame-footer {
+			padding: 20rpx 30rpx;
+
+			.watermark-line {
+				&:nth-child(1) {
+					font-size: 28rpx;
+				}
+
+				&:nth-child(2) {
+					font-size: 24rpx;
+				}
+
+				&:nth-child(3) {
+					font-size: 22rpx;
+				}
+			}
+		}
+	}
+}
+
+.edgeInsetBottom {
+	width: 750rpx;
+	height: var(--window-bottom);
+	background-color: #FFFFFF;
+}
+
+.fixedView {
+	position: fixed;
+	width: 750rpx;
+	height: 30px;
+	bottom: var(--window-bottom);
+}
+</style>

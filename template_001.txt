@@ -1,0 +1,183 @@
+<template>
+	<view class="container">
+		<uni-nav-bar :fixed="true" :border="false" status-bar title="Topics" />
+		<view class="content">
+			<view class="section" v-for="(section, index) in sections" :key="index">
+				<text class="section-title">{{ section.title }}</text>
+				<br>
+				<text class="section-subtitle">{{ section.subtitle }}</text>
+				<scroll-view v-if="section.type === 'phone'" scroll-x="true" class="image-scroll">
+					<view class="image-container" v-for="(image, imgIndex) in section.images" :key="imgIndex">
+						<image :src="image" class="image-item" />
+						<view class="watermark">
+							<text class="watermark-brand">FUJIFILM</text>
+							<text class="watermark-camera">Shot on X-T5</text>
+							<text class="watermark-lens">XF33mmF1.4R LM WR</text>
+						</view>
+					</view>
+				</scroll-view>
+				<scroll-view v-else-if="section.type === 'pc'" scroll-x="true" class="image-scroll pc-scroll">
+					<view class="image-container" v-for="(image, imgIndex) in section.images" :key="imgIndex">
+						<image :src="image" class="image-item pc-image" />
+						<view class="watermark">
+							<text class="watermark-brand">FUJIFILM</text>
+							<text class="watermark-camera">Shot on X-T5</text>
+							<text class="watermark-lens">XF33mmF1.4R LM WR</text>
+						</view>
+					</view>
+				</scroll-view>
+			</view>
+		</view>
+		<view class="edgeInsetBottom"></view>
+		<view class="fixedView"></view>
+	</view>
+</template>
+
+<script setup>
+import uniIcons from '@/uni_modules/uni-icons/components/uni-icons/uni-icons.vue'
+import uniNavBar from '@/uni_modules/uni-nav-bar/components/uni-nav-bar/uni-nav-bar.vue'
+import { ref } from 'vue';
+
+const sections = ref([
+	{
+		title: '富士胶韵',
+		subtitle: '在时光长廊，留下复古影像。',
+		type: 'phone',
+		images: [
+			'https://haowallpaper.com/link/common/file/getCroppingImg/15565917146681664',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/5daf14db79a4176a7875155879eaf76d',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/c141f81b305795fd463216030ecd244d',
+
+		]
+	},
+	{
+		title: '徕镜传奇',
+		subtitle: '于岁月长河，留下经典影像。',
+		type: 'pc',
+		images: [
+			'https://haowallpaper.com/link/common/file/getCroppingImg/16144648753630592',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/16144648753630592',
+			'https://haowallpaper.com/link/common/file/getCroppingImg/16144648753630592',
+		]
+	}
+]);
+</script>
+
+<style lang="scss">
+.container {
+	font-family: 'MiSans';
+}
+
+.content {
+	padding: 20rpx;
+	display: flex;
+	flex-direction: column;
+
+}
+
+.section {
+	margin-bottom: 40rpx;
+}
+
+.section-title {
+	font-size: 36rpx;
+	font-weight: bold;
+	margin-bottom: 10rpx;
+}
+
+.section-subtitle {
+	font-size: 28rpx;
+	color: #888;
+	margin-bottom: 20rpx;
+}
+
+.image-scroll {
+	white-space: nowrap;
+	width: 100%;
+	overflow-x: auto;
+
+	.image-container {
+		position: relative;
+		display: inline-block;
+		margin-right: 10rpx;
+
+		.watermark {
+			position: absolute;
+			bottom: 20rpx;
+			right: 20rpx;
+			color: rgba(255, 255, 255, 0.9);
+			font-family: Arial, sans-serif;
+			text-align: right;
+			pointer-events: none;
+
+			.watermark-brand {
+				font-size: 24rpx;
+				font-weight: bold;
+				display: block;
+			}
+
+			.watermark-camera {
+				font-size: 20rpx;
+				display: block;
+				margin-top: 4rpx;
+			}
+
+			.watermark-lens {
+				font-size: 18rpx;
+				display: block;
+				margin-top: 2rpx;
+				color: rgba(255, 255, 255, 0.8);
+			}
+		}
+	}
+}
+
+// 调整图片容器尺寸
+.image-item {
+	height: 500rpx;
+	width: 40vw;
+	border-radius: 12rpx;
+}
+
+// 电脑壁纸样式调整
+.pc-scroll {
+	.image-container {
+		width: 80%;
+
+		.pc-image {
+			height: 380rpx;
+			width: 100%;
+		}
+	}
+
+	.watermark {
+		bottom: 30rpx !important;
+		right: 30rpx !important;
+
+		.watermark-brand {
+			font-size: 28rpx !important;
+		}
+
+		.watermark-camera {
+			font-size: 24rpx !important;
+		}
+
+		.watermark-lens {
+			font-size: 22rpx !important;
+		}
+	}
+}
+
+.edgeInsetBottom {
+	width: 750rpx;
+	height: var(--window-bottom);
+	background-color: #FFFFFF;
+}
+
+.fixedView {
+	position: fixed;
+	width: 750rpx;
+	height: 30px;
+	bottom: var(--window-bottom);
+}
+</style>
