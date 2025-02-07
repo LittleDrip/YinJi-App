@@ -1,7 +1,7 @@
 <template>
-	<scroll-view enable-back-to-top="true" class="container">
+	<view class="container">
 		<!-- 原有内容包裹v-if -->
-		<view>
+		<view v-show="!showFullscreen">
 			<uni-nav-bar :fixed="true" :border="false" status-bar title="模版" style="font-weight: bold;" />
 			<view class="content">
 
@@ -47,28 +47,25 @@
 				</view>
 			</view>
 		</view>
-		<view>
-			<!-- 全屏展示层 -->
-			<uni-transition mode-class="fade" duration="400" :show="showFullscreen" class="fullscreen-container"
-				@click="closeFullscreen">
-				<view class="photo-frame fullscreen-frame" :class="{ 'pc-frame': selectedSection?.type === 'pc' }">
-					<view class="image-container" :class="{ 'pc-container': selectedSection?.type === 'pc' }">
-						<image :src="selectedImage" class="image-content"
-							:class="{ 'pc-content': selectedSection?.type === 'pc' }" />
-					</view>
-					<view class="frame-footer" :class="{ 'pc-footer': selectedSection?.type === 'pc' }">
-						<image :src="selectedSection?.watermark.brandLogo" class="watermark-brand-logo"
-							mode="aspectFit" />
-						<text class="watermark-line">{{ selectedSection?.watermark.camera }}</text>
-						<text class="watermark-line">{{ selectedSection?.watermark.lens }}</text>
-					</view>
+		<!-- 全屏展示层 -->
+		<view v-show="showFullscreen" class="fullscreen-container" @click="closeFullscreen" @touchstart="handleTouchStart"
+			@touchend="handleTouchEnd">
+			<view class="photo-frame fullscreen-frame" :class="{ 'pc-frame': selectedSection?.type === 'pc' }">
+				<view class="image-container" :class="{ 'pc-container': selectedSection?.type === 'pc' }">
+					<image :src="selectedImage" class="image-content"
+						:class="{ 'pc-content': selectedSection?.type === 'pc' }" />
 				</view>
-			</uni-transition>
+				<view class="frame-footer" :class="{ 'pc-footer': selectedSection?.type === 'pc' }">
+					<image :src="selectedSection?.watermark.brandLogo" class="watermark-brand-logo" mode="aspectFit" />
+					<text class="watermark-line">{{ selectedSection?.watermark.camera }}</text>
+					<text class="watermark-line">{{ selectedSection?.watermark.lens }}</text>
+				</view>
+			</view>
 		</view>
 
 		<view class="edgeInsetBottom"></view>
 		<view class="fixedView"></view>
-	</scroll-view>
+	</view>
 </template>
 
 <script setup>
@@ -93,17 +90,27 @@
 
 	const closeFullscreen = () => {
 		showFullscreen.value = false;
-
+		
 		uni.showTabBar();
 	};
 
+	const handleTouchStart = (e) => {
+		touchStartX.value = e.touches[0].clientX;
+	};
 
+	const handleTouchEnd = (e) => {
+		const touchEndX = e.changedTouches[0].clientX;
+		const deltaX = touchEndX - touchStartX.value;
+		if (deltaX < -50) { // 左滑超过50像素触发
+			closeFullscreen();
+		}
+	};
 	const sections = ref([{
 			title: '富士胶韵',
 			subtitle: '在时光长廊，留下复古影像。',
 			type: 'phone',
 			images: [
-				'https://pic1.imgdb.cn/item/67a63dafd0e0a243d4fca7ec.jpg',
+				'https://haowallpaper.com/link/common/file/getCroppingImg/15565917146681664',
 				'https://haowallpaper.com/link/common/file/getCroppingImg/5daf14db79a4176a7875155879eaf76d',
 				'https://haowallpaper.com/link/common/file/getCroppingImg/c141f81b305795fd463216030ecd244d',
 
@@ -143,8 +150,6 @@
 
 	.container {
 		font-family: 'MiSans';
-		overflow: hidden;
-		/* 隐藏滚动条并禁用滚动 */
 	}
 
 	.content {
@@ -345,8 +350,7 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		// animation: fade-in .3s ease;
-		overflow: hidden;
+		animation: scaleUp 0.3s ease;
 	}
 
 	// 复用原有photo-frame样式
@@ -406,9 +410,9 @@
 	}
 
 	// 动画效果
-	@keyframes fade-in {
+	@keyframes scaleUp {
 		from {
-			transform: scale(0.5);
+			transform: scale(0.9);
 			opacity: 0;
 		}
 

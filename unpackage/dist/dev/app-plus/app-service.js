@@ -752,7 +752,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(
       "text",
       {
@@ -767,7 +767,7 @@ if (uni.restoreGlobal) {
       /* CLASS, STYLE */
     );
   }
-  const uniIcons = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$2], ["__scopeId", "data-v-d31e1c47"], ["__file", "D:/HBuilderProjects/YinJi/uni_modules/uni-icons/components/uni-icons/uni-icons.vue"]]);
+  const uniIcons = /* @__PURE__ */ _export_sfc(_sfc_main$a, [["render", _sfc_render$3], ["__scopeId", "data-v-d31e1c47"], ["__file", "D:/HBuilderProjects/YinJi/uni_modules/uni-icons/components/uni-icons/uni-icons.vue"]]);
   const _sfc_main$9 = {
     name: "UniStatusBar",
     data() {
@@ -776,7 +776,7 @@ if (uni.restoreGlobal) {
       };
     }
   };
-  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     return vue.openBlock(), vue.createElementBlock(
       "view",
       {
@@ -790,7 +790,7 @@ if (uni.restoreGlobal) {
       /* STYLE */
     );
   }
-  const statusBar = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$1], ["__scopeId", "data-v-7920e3e0"], ["__file", "D:/HBuilderProjects/YinJi/uni_modules/uni-nav-bar/components/uni-nav-bar/uni-status-bar.vue"]]);
+  const statusBar = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$2], ["__scopeId", "data-v-7920e3e0"], ["__file", "D:/HBuilderProjects/YinJi/uni_modules/uni-nav-bar/components/uni-nav-bar/uni-status-bar.vue"]]);
   const getVal = (val) => typeof val === "number" ? val + "px" : val;
   const _sfc_main$8 = {
     name: "UniNavBar",
@@ -912,7 +912,7 @@ if (uni.restoreGlobal) {
       }
     }
   };
-  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+  function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     const _component_status_bar = vue.resolveComponent("status-bar");
     const _component_uni_icons = resolveEasycom(vue.resolveDynamicComponent("uni-icons"), uniIcons);
     return vue.openBlock(), vue.createElementBlock(
@@ -1067,7 +1067,7 @@ if (uni.restoreGlobal) {
       /* CLASS */
     );
   }
-  const uniNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render], ["__scopeId", "data-v-26544265"], ["__file", "D:/HBuilderProjects/YinJi/uni_modules/uni-nav-bar/components/uni-nav-bar/uni-nav-bar.vue"]]);
+  const uniNavBar = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$1], ["__scopeId", "data-v-26544265"], ["__file", "D:/HBuilderProjects/YinJi/uni_modules/uni-nav-bar/components/uni-nav-bar/uni-nav-bar.vue"]]);
   const _sfc_main$7 = {
     __name: "index",
     setup(__props) {
@@ -1122,16 +1122,407 @@ if (uni.restoreGlobal) {
     }
   };
   const PagesWatermarkIndex = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["__file", "D:/HBuilderProjects/YinJi/pages/watermark/index.vue"]]);
+  class MPAnimation {
+    constructor(options, _this) {
+      this.options = options;
+      this.animation = uni.createAnimation({
+        ...options
+      });
+      this.currentStepAnimates = {};
+      this.next = 0;
+      this.$ = _this;
+    }
+    _nvuePushAnimates(type, args) {
+      let aniObj = this.currentStepAnimates[this.next];
+      let styles = {};
+      if (!aniObj) {
+        styles = {
+          styles: {},
+          config: {}
+        };
+      } else {
+        styles = aniObj;
+      }
+      if (animateTypes1.includes(type)) {
+        if (!styles.styles.transform) {
+          styles.styles.transform = "";
+        }
+        let unit = "";
+        if (type === "rotate") {
+          unit = "deg";
+        }
+        styles.styles.transform += `${type}(${args + unit}) `;
+      } else {
+        styles.styles[type] = `${args}`;
+      }
+      this.currentStepAnimates[this.next] = styles;
+    }
+    _animateRun(styles = {}, config = {}) {
+      let ref = this.$.$refs["ani"].ref;
+      if (!ref)
+        return;
+      return new Promise((resolve, reject) => {
+        nvueAnimation.transition(ref, {
+          styles,
+          ...config
+        }, (res) => {
+          resolve();
+        });
+      });
+    }
+    _nvueNextAnimate(animates, step = 0, fn) {
+      let obj = animates[step];
+      if (obj) {
+        let {
+          styles,
+          config
+        } = obj;
+        this._animateRun(styles, config).then(() => {
+          step += 1;
+          this._nvueNextAnimate(animates, step, fn);
+        });
+      } else {
+        this.currentStepAnimates = {};
+        typeof fn === "function" && fn();
+        this.isEnd = true;
+      }
+    }
+    step(config = {}) {
+      this.animation.step(config);
+      return this;
+    }
+    run(fn) {
+      this.$.animationData = this.animation.export();
+      this.$.timer = setTimeout(() => {
+        typeof fn === "function" && fn();
+      }, this.$.durationTime);
+    }
+  }
+  const animateTypes1 = [
+    "matrix",
+    "matrix3d",
+    "rotate",
+    "rotate3d",
+    "rotateX",
+    "rotateY",
+    "rotateZ",
+    "scale",
+    "scale3d",
+    "scaleX",
+    "scaleY",
+    "scaleZ",
+    "skew",
+    "skewX",
+    "skewY",
+    "translate",
+    "translate3d",
+    "translateX",
+    "translateY",
+    "translateZ"
+  ];
+  const animateTypes2 = ["opacity", "backgroundColor"];
+  const animateTypes3 = ["width", "height", "left", "right", "top", "bottom"];
+  animateTypes1.concat(animateTypes2, animateTypes3).forEach((type) => {
+    MPAnimation.prototype[type] = function(...args) {
+      this.animation[type](...args);
+      return this;
+    };
+  });
+  function createAnimation(option, _this) {
+    if (!_this)
+      return;
+    clearTimeout(_this.timer);
+    return new MPAnimation(option, _this);
+  }
   const _sfc_main$6 = {
+    name: "uniTransition",
+    emits: ["click", "change"],
+    props: {
+      show: {
+        type: Boolean,
+        default: false
+      },
+      modeClass: {
+        type: [Array, String],
+        default() {
+          return "fade";
+        }
+      },
+      duration: {
+        type: Number,
+        default: 300
+      },
+      styles: {
+        type: Object,
+        default() {
+          return {};
+        }
+      },
+      customClass: {
+        type: String,
+        default: ""
+      },
+      onceRender: {
+        type: Boolean,
+        default: false
+      }
+    },
+    data() {
+      return {
+        isShow: false,
+        transform: "",
+        opacity: 1,
+        animationData: {},
+        durationTime: 300,
+        config: {}
+      };
+    },
+    watch: {
+      show: {
+        handler(newVal) {
+          if (newVal) {
+            this.open();
+          } else {
+            if (this.isShow) {
+              this.close();
+            }
+          }
+        },
+        immediate: true
+      }
+    },
+    computed: {
+      // 生成样式数据
+      stylesObject() {
+        let styles = {
+          ...this.styles,
+          "transition-duration": this.duration / 1e3 + "s"
+        };
+        let transform = "";
+        for (let i in styles) {
+          let line = this.toLine(i);
+          transform += line + ":" + styles[i] + ";";
+        }
+        return transform;
+      },
+      // 初始化动画条件
+      transformStyles() {
+        return "transform:" + this.transform + ";opacity:" + this.opacity + ";" + this.stylesObject;
+      }
+    },
+    created() {
+      this.config = {
+        duration: this.duration,
+        timingFunction: "ease",
+        transformOrigin: "50% 50%",
+        delay: 0
+      };
+      this.durationTime = this.duration;
+    },
+    methods: {
+      /**
+       *  ref 触发 初始化动画
+       */
+      init(obj = {}) {
+        if (obj.duration) {
+          this.durationTime = obj.duration;
+        }
+        this.animation = createAnimation(Object.assign(this.config, obj), this);
+      },
+      /**
+       * 点击组件触发回调
+       */
+      onClick() {
+        this.$emit("click", {
+          detail: this.isShow
+        });
+      },
+      /**
+       * ref 触发 动画分组
+       * @param {Object} obj
+       */
+      step(obj, config = {}) {
+        if (!this.animation)
+          return;
+        for (let i in obj) {
+          try {
+            if (typeof obj[i] === "object") {
+              this.animation[i](...obj[i]);
+            } else {
+              this.animation[i](obj[i]);
+            }
+          } catch (e) {
+            formatAppLog("error", "at uni_modules/uni-transition/components/uni-transition/uni-transition.vue:148", `方法 ${i} 不存在`);
+          }
+        }
+        this.animation.step(config);
+        return this;
+      },
+      /**
+       *  ref 触发 执行动画
+       */
+      run(fn) {
+        if (!this.animation)
+          return;
+        this.animation.run(fn);
+      },
+      // 开始过度动画
+      open() {
+        clearTimeout(this.timer);
+        this.transform = "";
+        this.isShow = true;
+        let { opacity, transform } = this.styleInit(false);
+        if (typeof opacity !== "undefined") {
+          this.opacity = opacity;
+        }
+        this.transform = transform;
+        this.$nextTick(() => {
+          this.timer = setTimeout(() => {
+            this.animation = createAnimation(this.config, this);
+            this.tranfromInit(false).step();
+            this.animation.run();
+            this.$emit("change", {
+              detail: this.isShow
+            });
+          }, 20);
+        });
+      },
+      // 关闭过度动画
+      close(type) {
+        if (!this.animation)
+          return;
+        this.tranfromInit(true).step().run(() => {
+          this.isShow = false;
+          this.animationData = null;
+          this.animation = null;
+          let { opacity, transform } = this.styleInit(false);
+          this.opacity = opacity || 1;
+          this.transform = transform;
+          this.$emit("change", {
+            detail: this.isShow
+          });
+        });
+      },
+      // 处理动画开始前的默认样式
+      styleInit(type) {
+        let styles = {
+          transform: ""
+        };
+        let buildStyle = (type2, mode) => {
+          if (mode === "fade") {
+            styles.opacity = this.animationType(type2)[mode];
+          } else {
+            styles.transform += this.animationType(type2)[mode] + " ";
+          }
+        };
+        if (typeof this.modeClass === "string") {
+          buildStyle(type, this.modeClass);
+        } else {
+          this.modeClass.forEach((mode) => {
+            buildStyle(type, mode);
+          });
+        }
+        return styles;
+      },
+      // 处理内置组合动画
+      tranfromInit(type) {
+        let buildTranfrom = (type2, mode) => {
+          let aniNum = null;
+          if (mode === "fade") {
+            aniNum = type2 ? 0 : 1;
+          } else {
+            aniNum = type2 ? "-100%" : "0";
+            if (mode === "zoom-in") {
+              aniNum = type2 ? 0.8 : 1;
+            }
+            if (mode === "zoom-out") {
+              aniNum = type2 ? 1.2 : 1;
+            }
+            if (mode === "slide-right") {
+              aniNum = type2 ? "100%" : "0";
+            }
+            if (mode === "slide-bottom") {
+              aniNum = type2 ? "100%" : "0";
+            }
+          }
+          this.animation[this.animationMode()[mode]](aniNum);
+        };
+        if (typeof this.modeClass === "string") {
+          buildTranfrom(type, this.modeClass);
+        } else {
+          this.modeClass.forEach((mode) => {
+            buildTranfrom(type, mode);
+          });
+        }
+        return this.animation;
+      },
+      animationType(type) {
+        return {
+          fade: type ? 0 : 1,
+          "slide-top": `translateY(${type ? "0" : "-100%"})`,
+          "slide-right": `translateX(${type ? "0" : "100%"})`,
+          "slide-bottom": `translateY(${type ? "0" : "100%"})`,
+          "slide-left": `translateX(${type ? "0" : "-100%"})`,
+          "zoom-in": `scaleX(${type ? 1 : 0.8}) scaleY(${type ? 1 : 0.8})`,
+          "zoom-out": `scaleX(${type ? 1 : 1.2}) scaleY(${type ? 1 : 1.2})`
+        };
+      },
+      // 内置动画类型与实际动画对应字典
+      animationMode() {
+        return {
+          fade: "opacity",
+          "slide-top": "translateY",
+          "slide-right": "translateX",
+          "slide-bottom": "translateY",
+          "slide-left": "translateX",
+          "zoom-in": "scale",
+          "zoom-out": "scale"
+        };
+      },
+      // 驼峰转中横线
+      toLine(name) {
+        return name.replace(/([A-Z])/g, "-$1").toLowerCase();
+      }
+    }
+  };
+  function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+    return vue.withDirectives((vue.openBlock(), vue.createElementBlock("view", {
+      ref: "ani",
+      animation: $data.animationData,
+      class: vue.normalizeClass($props.customClass),
+      style: vue.normalizeStyle($options.transformStyles),
+      onClick: _cache[0] || (_cache[0] = (...args) => $options.onClick && $options.onClick(...args))
+    }, [
+      vue.renderSlot(_ctx.$slots, "default")
+    ], 14, ["animation"])), [
+      [vue.vShow, $data.isShow]
+    ]);
+  }
+  const __easycom_0 = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render], ["__file", "D:/HBuilderProjects/YinJi/uni_modules/uni-transition/components/uni-transition/uni-transition.vue"]]);
+  const _sfc_main$5 = {
     __name: "index",
     setup(__props) {
+      const showFullscreen = vue.ref(false);
+      const selectedImage = vue.ref("");
+      const selectedSection = vue.ref(null);
+      vue.ref(0);
+      const openFullscreen = (image, section) => {
+        selectedImage.value = image;
+        selectedSection.value = section;
+        showFullscreen.value = true;
+        uni.hideTabBar();
+      };
+      const closeFullscreen = () => {
+        showFullscreen.value = false;
+        uni.showTabBar();
+      };
       const sections = vue.ref([
         {
           title: "富士胶韵",
           subtitle: "在时光长廊，留下复古影像。",
           type: "phone",
           images: [
-            "https://haowallpaper.com/link/common/file/getCroppingImg/15565917146681664",
+            "https://pic1.imgdb.cn/item/67a63dafd0e0a243d4fca7ec.jpg",
             "https://haowallpaper.com/link/common/file/getCroppingImg/5daf14db79a4176a7875155879eaf76d",
             "https://haowallpaper.com/link/common/file/getCroppingImg/c141f81b305795fd463216030ecd244d"
           ],
@@ -1158,136 +1549,220 @@ if (uni.restoreGlobal) {
         }
       ]);
       return (_ctx, _cache) => {
-        return vue.openBlock(), vue.createElementBlock("view", { class: "container" }, [
-          vue.createVNode(uniNavBar, {
-            fixed: true,
-            border: false,
-            "status-bar": "",
-            title: "模版",
-            style: { "font-weight": "bold" }
-          }),
-          vue.createElementVNode("view", { class: "content" }, [
-            (vue.openBlock(true), vue.createElementBlock(
-              vue.Fragment,
-              null,
-              vue.renderList(sections.value, (section, index) => {
-                return vue.openBlock(), vue.createElementBlock("view", {
-                  class: "section",
-                  key: index
-                }, [
-                  vue.createElementVNode(
-                    "text",
-                    { class: "section-title" },
-                    vue.toDisplayString(section.title),
-                    1
-                    /* TEXT */
-                  ),
-                  vue.createElementVNode("br"),
-                  vue.createElementVNode(
-                    "text",
-                    { class: "section-subtitle" },
-                    vue.toDisplayString(section.subtitle),
-                    1
-                    /* TEXT */
-                  ),
-                  section.type === "phone" ? (vue.openBlock(), vue.createElementBlock("scroll-view", {
-                    key: 0,
-                    "scroll-x": "true",
-                    class: "image-scroll"
+        const _component_uni_transition = resolveEasycom(vue.resolveDynamicComponent("uni-transition"), __easycom_0);
+        return vue.openBlock(), vue.createElementBlock("scroll-view", {
+          "enable-back-to-top": "true",
+          class: "container"
+        }, [
+          vue.createCommentVNode(" 原有内容包裹v-if "),
+          vue.createElementVNode("view", null, [
+            vue.createVNode(uniNavBar, {
+              fixed: true,
+              border: false,
+              "status-bar": "",
+              title: "模版",
+              style: { "font-weight": "bold" }
+            }),
+            vue.createElementVNode("view", { class: "content" }, [
+              (vue.openBlock(true), vue.createElementBlock(
+                vue.Fragment,
+                null,
+                vue.renderList(sections.value, (section, index) => {
+                  return vue.openBlock(), vue.createElementBlock("view", {
+                    class: "section",
+                    key: index
                   }, [
-                    (vue.openBlock(true), vue.createElementBlock(
-                      vue.Fragment,
-                      null,
-                      vue.renderList(section.images, (image, imgIndex) => {
-                        return vue.openBlock(), vue.createElementBlock("view", {
-                          class: "photo-frame",
-                          key: imgIndex
-                        }, [
-                          vue.createElementVNode("view", { class: "image-container" }, [
-                            vue.createElementVNode("image", {
-                              src: image,
-                              class: "image-content"
-                            }, null, 8, ["src"])
-                          ]),
-                          vue.createElementVNode("view", { class: "frame-footer" }, [
-                            vue.createCommentVNode(' <text class="watermark-line">{{ section.watermark.brand }}</text> '),
-                            vue.createElementVNode("image", {
-                              src: section.watermark.brandLogo,
-                              class: "watermark-brand-logo",
-                              mode: "aspectFit"
-                            }, null, 8, ["src"]),
-                            vue.createElementVNode(
-                              "text",
-                              { class: "watermark-line" },
-                              vue.toDisplayString(section.watermark.camera),
-                              1
-                              /* TEXT */
-                            ),
-                            vue.createElementVNode(
-                              "text",
-                              { class: "watermark-line" },
-                              vue.toDisplayString(section.watermark.lens),
-                              1
-                              /* TEXT */
-                            )
-                          ])
-                        ]);
-                      }),
-                      128
-                      /* KEYED_FRAGMENT */
-                    ))
-                  ])) : section.type === "pc" ? (vue.openBlock(), vue.createElementBlock("scroll-view", {
-                    key: 1,
-                    "scroll-x": "true",
-                    class: "image-scroll pc-scroll"
-                  }, [
-                    (vue.openBlock(true), vue.createElementBlock(
-                      vue.Fragment,
-                      null,
-                      vue.renderList(section.images, (image, imgIndex) => {
-                        return vue.openBlock(), vue.createElementBlock("view", {
-                          class: "photo-frame",
-                          key: imgIndex
-                        }, [
-                          vue.createElementVNode("view", { class: "image-container pc-container" }, [
-                            vue.createElementVNode("image", {
-                              src: image,
-                              class: "image-content pc-content"
-                            }, null, 8, ["src"])
-                          ]),
-                          vue.createElementVNode("view", { class: "frame-footer" }, [
-                            vue.createCommentVNode(' <text class="watermark-line">{{ section.watermark.brand }}</text>\r\n							  '),
-                            vue.createElementVNode("image", {
-                              src: section.watermark.brandLogo,
-                              class: "watermark-brand-logo",
-                              mode: "aspectFit"
-                            }, null, 8, ["src"]),
-                            vue.createElementVNode(
-                              "text",
-                              { class: "watermark-line" },
-                              vue.toDisplayString(section.watermark.camera),
-                              1
-                              /* TEXT */
-                            ),
-                            vue.createElementVNode(
-                              "text",
-                              { class: "watermark-line" },
-                              vue.toDisplayString(section.watermark.lens),
-                              1
-                              /* TEXT */
-                            )
-                          ])
-                        ]);
-                      }),
-                      128
-                      /* KEYED_FRAGMENT */
-                    ))
-                  ])) : vue.createCommentVNode("v-if", true)
-                ]);
+                    vue.createElementVNode(
+                      "text",
+                      { class: "section-title" },
+                      vue.toDisplayString(section.title),
+                      1
+                      /* TEXT */
+                    ),
+                    vue.createElementVNode("br"),
+                    vue.createElementVNode(
+                      "text",
+                      { class: "section-subtitle" },
+                      vue.toDisplayString(section.subtitle),
+                      1
+                      /* TEXT */
+                    ),
+                    section.type === "phone" ? (vue.openBlock(), vue.createElementBlock("scroll-view", {
+                      key: 0,
+                      "scroll-x": "true",
+                      class: "image-scroll"
+                    }, [
+                      (vue.openBlock(true), vue.createElementBlock(
+                        vue.Fragment,
+                        null,
+                        vue.renderList(section.images, (image, imgIndex) => {
+                          return vue.openBlock(), vue.createElementBlock("view", {
+                            class: "photo-frame",
+                            key: imgIndex
+                          }, [
+                            vue.createElementVNode("view", { class: "image-container" }, [
+                              vue.createCommentVNode(' <image :src="image" class="image-content" /> '),
+                              vue.createCommentVNode(" 修改图片元素，添加点击事件 "),
+                              vue.createElementVNode("image", {
+                                src: image,
+                                class: "image-content",
+                                onClick: ($event) => openFullscreen(image, section)
+                              }, null, 8, ["src", "onClick"])
+                            ]),
+                            vue.createElementVNode("view", { class: "frame-footer" }, [
+                              vue.createCommentVNode(' <text class="watermark-line">{{ section.watermark.brand }}</text> '),
+                              vue.createElementVNode("image", {
+                                src: section.watermark.brandLogo,
+                                class: "watermark-brand-logo",
+                                mode: "aspectFit"
+                              }, null, 8, ["src"]),
+                              vue.createElementVNode(
+                                "text",
+                                { class: "watermark-line" },
+                                vue.toDisplayString(section.watermark.camera),
+                                1
+                                /* TEXT */
+                              ),
+                              vue.createElementVNode(
+                                "text",
+                                { class: "watermark-line" },
+                                vue.toDisplayString(section.watermark.lens),
+                                1
+                                /* TEXT */
+                              )
+                            ])
+                          ]);
+                        }),
+                        128
+                        /* KEYED_FRAGMENT */
+                      ))
+                    ])) : section.type === "pc" ? (vue.openBlock(), vue.createElementBlock("scroll-view", {
+                      key: 1,
+                      "scroll-x": "true",
+                      class: "image-scroll pc-scroll"
+                    }, [
+                      (vue.openBlock(true), vue.createElementBlock(
+                        vue.Fragment,
+                        null,
+                        vue.renderList(section.images, (image, imgIndex) => {
+                          return vue.openBlock(), vue.createElementBlock("view", {
+                            class: "photo-frame",
+                            key: imgIndex
+                          }, [
+                            vue.createElementVNode("view", { class: "image-container pc-container" }, [
+                              vue.createCommentVNode(' <image :src="image" class="image-content pc-content" /> '),
+                              vue.createCommentVNode(" 修改图片元素，添加点击事件 "),
+                              vue.createElementVNode("image", {
+                                src: image,
+                                class: "image-content pc-content",
+                                onClick: ($event) => openFullscreen(image, section)
+                              }, null, 8, ["src", "onClick"])
+                            ]),
+                            vue.createElementVNode("view", { class: "frame-footer" }, [
+                              vue.createCommentVNode(' <text class="watermark-line">{{ section.watermark.brand }}</text>\r\n							  '),
+                              vue.createElementVNode("image", {
+                                src: section.watermark.brandLogo,
+                                class: "watermark-brand-logo",
+                                mode: "aspectFit"
+                              }, null, 8, ["src"]),
+                              vue.createElementVNode(
+                                "text",
+                                { class: "watermark-line" },
+                                vue.toDisplayString(section.watermark.camera),
+                                1
+                                /* TEXT */
+                              ),
+                              vue.createElementVNode(
+                                "text",
+                                { class: "watermark-line" },
+                                vue.toDisplayString(section.watermark.lens),
+                                1
+                                /* TEXT */
+                              )
+                            ])
+                          ]);
+                        }),
+                        128
+                        /* KEYED_FRAGMENT */
+                      ))
+                    ])) : vue.createCommentVNode("v-if", true)
+                  ]);
+                }),
+                128
+                /* KEYED_FRAGMENT */
+              ))
+            ])
+          ]),
+          vue.createElementVNode("view", null, [
+            vue.createCommentVNode(" 全屏展示层 "),
+            vue.createVNode(_component_uni_transition, {
+              "mode-class": "fade",
+              duration: "400",
+              show: showFullscreen.value,
+              class: "fullscreen-container",
+              onClick: closeFullscreen
+            }, {
+              default: vue.withCtx(() => {
+                var _a, _b, _c, _d, _e, _f, _g;
+                return [
+                  vue.createElementVNode(
+                    "view",
+                    {
+                      class: vue.normalizeClass(["photo-frame fullscreen-frame", { "pc-frame": ((_a = selectedSection.value) == null ? void 0 : _a.type) === "pc" }])
+                    },
+                    [
+                      vue.createElementVNode(
+                        "view",
+                        {
+                          class: vue.normalizeClass(["image-container", { "pc-container": ((_b = selectedSection.value) == null ? void 0 : _b.type) === "pc" }])
+                        },
+                        [
+                          vue.createElementVNode("image", {
+                            src: selectedImage.value,
+                            class: vue.normalizeClass(["image-content", { "pc-content": ((_c = selectedSection.value) == null ? void 0 : _c.type) === "pc" }])
+                          }, null, 10, ["src"])
+                        ],
+                        2
+                        /* CLASS */
+                      ),
+                      vue.createElementVNode(
+                        "view",
+                        {
+                          class: vue.normalizeClass(["frame-footer", { "pc-footer": ((_d = selectedSection.value) == null ? void 0 : _d.type) === "pc" }])
+                        },
+                        [
+                          vue.createElementVNode("image", {
+                            src: (_e = selectedSection.value) == null ? void 0 : _e.watermark.brandLogo,
+                            class: "watermark-brand-logo",
+                            mode: "aspectFit"
+                          }, null, 8, ["src"]),
+                          vue.createElementVNode(
+                            "text",
+                            { class: "watermark-line" },
+                            vue.toDisplayString((_f = selectedSection.value) == null ? void 0 : _f.watermark.camera),
+                            1
+                            /* TEXT */
+                          ),
+                          vue.createElementVNode(
+                            "text",
+                            { class: "watermark-line" },
+                            vue.toDisplayString((_g = selectedSection.value) == null ? void 0 : _g.watermark.lens),
+                            1
+                            /* TEXT */
+                          )
+                        ],
+                        2
+                        /* CLASS */
+                      )
+                    ],
+                    2
+                    /* CLASS */
+                  )
+                ];
               }),
-              128
-              /* KEYED_FRAGMENT */
-            ))
+              _: 1
+              /* STABLE */
+            }, 8, ["show"])
           ]),
           vue.createElementVNode("view", { class: "edgeInsetBottom" }),
           vue.createElementVNode("view", { class: "fixedView" })
@@ -1295,8 +1770,8 @@ if (uni.restoreGlobal) {
       };
     }
   };
-  const PagesTemplateIndex = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["__file", "D:/HBuilderProjects/YinJi/pages/template/index.vue"]]);
-  const _sfc_main$5 = {
+  const PagesTemplateIndex = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["__file", "D:/HBuilderProjects/YinJi/pages/template/index.vue"]]);
+  const _sfc_main$4 = {
     __name: "index",
     setup(__props) {
       return (_ctx, _cache) => {
@@ -1315,8 +1790,8 @@ if (uni.restoreGlobal) {
       };
     }
   };
-  const PagesSponsorIndex = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["__file", "D:/HBuilderProjects/YinJi/pages/sponsor/index.vue"]]);
-  const _sfc_main$4 = {
+  const PagesSponsorIndex = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__file", "D:/HBuilderProjects/YinJi/pages/sponsor/index.vue"]]);
+  const _sfc_main$3 = {
     __name: "custom-navbar",
     props: {
       title: {
@@ -1357,8 +1832,8 @@ if (uni.restoreGlobal) {
       };
     }
   };
-  const CustomNavbar = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["__scopeId", "data-v-94e9cc56"], ["__file", "D:/HBuilderProjects/YinJi/components/custom-navbar/custom-navbar.vue"]]);
-  const _sfc_main$3 = {
+  const CustomNavbar = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__scopeId", "data-v-94e9cc56"], ["__file", "D:/HBuilderProjects/YinJi/components/custom-navbar/custom-navbar.vue"]]);
+  const _sfc_main$2 = {
     __name: "index",
     setup(__props) {
       return (_ctx, _cache) => {
@@ -1374,8 +1849,8 @@ if (uni.restoreGlobal) {
       };
     }
   };
-  const PagesProfileIndex = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["__file", "D:/HBuilderProjects/YinJi/pages/profile/index.vue"]]);
-  const _sfc_main$2 = {
+  const PagesProfileIndex = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__file", "D:/HBuilderProjects/YinJi/pages/profile/index.vue"]]);
+  const _sfc_main$1 = {
     __name: "test",
     setup(__props) {
       const city = vue.ref("北京");
@@ -1632,49 +2107,12 @@ if (uni.restoreGlobal) {
       };
     }
   };
-  const PagesTestTest = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["__file", "D:/HBuilderProjects/YinJi/pages/test/test.vue"]]);
-  const _imports_0 = "/static/logo.png";
-  const _sfc_main$1 = {
-    __name: "image-detail",
-    setup(__props) {
-      const isShow = vue.ref(false);
-      vue.onMounted(() => {
-        setTimeout(() => {
-          isShow.value = true;
-        }, 100);
-      });
-      return (_ctx, _cache) => {
-        return vue.openBlock(), vue.createElementBlock("view", { class: "detail-container" }, [
-          vue.createElementVNode(
-            "image",
-            {
-              src: _imports_0,
-              class: vue.normalizeClass(["detail-image", { "image-show": isShow.value }])
-            },
-            null,
-            2
-            /* CLASS */
-          ),
-          vue.createElementVNode(
-            "text",
-            {
-              class: vue.normalizeClass(["detail-text", { "text-show": isShow.value }])
-            },
-            "123",
-            2
-            /* CLASS */
-          )
-        ]);
-      };
-    }
-  };
-  const PagesWatermarkImageDetail = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__file", "D:/HBuilderProjects/YinJi/pages/watermark/image-detail.vue"]]);
+  const PagesTestTest = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["__file", "D:/HBuilderProjects/YinJi/pages/test/test.vue"]]);
   __definePage("pages/watermark/index", PagesWatermarkIndex);
   __definePage("pages/template/index", PagesTemplateIndex);
   __definePage("pages/sponsor/index", PagesSponsorIndex);
   __definePage("pages/profile/index", PagesProfileIndex);
   __definePage("pages/test/test", PagesTestTest);
-  __definePage("pages/watermark/image-detail", PagesWatermarkImageDetail);
   const _sfc_main = {
     onLaunch: function() {
       formatAppLog("log", "at App.vue:4", "App Launch");

@@ -1,7 +1,10 @@
 <template>
 	<view class="container">
+   <!-- 原有内容包裹v-if -->
+	<template v-if="!showFullscreen">
 		<uni-nav-bar :fixed="true" :border="false" status-bar title="模版" style="font-weight: bold;" />
 		<view class="content">
+			
 			<view class="section" v-for="(section, index) in sections" :key="index">
 				<text class="section-title">{{ section.title }}</text>
 				<br>
@@ -9,7 +12,13 @@
 				<scroll-view v-if="section.type === 'phone'" scroll-x="true" class="image-scroll">
 					<view class="photo-frame" v-for="(image, imgIndex) in section.images" :key="imgIndex">
 						<view class="image-container">
-							<image :src="image" class="image-content" />
+							<!-- <image :src="image" class="image-content" /> -->
+							<!-- 修改图片元素，添加点击事件 -->
+							<image 
+							  :src="image" 
+							  class="image-content" 
+							  @click="openFullscreen(image, section)"
+							/>
 						</view>
 						<view class="frame-footer">
 							<!-- <text class="watermark-line">{{ section.watermark.brand }}</text> -->
@@ -23,7 +32,13 @@
 				<scroll-view v-else-if="section.type === 'pc'" scroll-x="true" class="image-scroll pc-scroll">
 					<view class="photo-frame" v-for="(image, imgIndex) in section.images" :key="imgIndex">
 						<view class="image-container pc-container">
-							<image :src="image" class="image-content pc-content" />
+							<!-- <image :src="image" class="image-content pc-content" /> -->
+							<!-- 修改图片元素，添加点击事件 -->
+							<image 
+							  :src="image" 
+							  class="image-content pc-content" 
+							  @click="openFullscreen(image, section)"
+							/>
 						</view>
 						<view class="frame-footer">
 							<!-- <text class="watermark-line">{{ section.watermark.brand }}</text>
@@ -36,6 +51,36 @@
 				</scroll-view>
 			</view>
 		</view>
+	</template>
+	  <!-- 全屏展示层 -->
+<view 
+    v-if="showFullscreen" 
+    class="fullscreen-container"
+    @click="closeFullscreen"
+    @touchstart="handleTouchStart"
+    @touchend="handleTouchEnd"
+  >
+    <view class="photo-frame fullscreen-frame" :class="{ 'pc-frame': selectedSection?.type === 'pc' }">
+      <view class="image-container" :class="{ 'pc-container': selectedSection?.type === 'pc' }">
+        <image 
+          :src="selectedImage" 
+          class="image-content"
+          :class="{ 'pc-content': selectedSection?.type === 'pc' }"
+          mode="aspectFit"
+        />
+      </view>
+      <view class="frame-footer" :class="{ 'pc-footer': selectedSection?.type === 'pc' }">
+        <image 
+          :src="selectedSection?.watermark.brandLogo" 
+          class="watermark-brand-logo"
+          mode="aspectFit"
+        />
+        <text class="watermark-line">{{ selectedSection?.watermark.camera }}</text>
+        <text class="watermark-line">{{ selectedSection?.watermark.lens }}</text>
+      </view>
+    </view>
+  </view>
+
 		<view class="edgeInsetBottom"></view>
 		<view class="fixedView"></view>
 	</view>
@@ -45,7 +90,35 @@
 import uniIcons from '@/uni_modules/uni-icons/components/uni-icons/uni-icons.vue'
 import uniNavBar from '@/uni_modules/uni-nav-bar/components/uni-nav-bar/uni-nav-bar.vue'
 import { ref } from 'vue';
+// 添加状态
+const showFullscreen = ref(false);
+const selectedImage = ref('');
+const selectedSection = ref(null);
+const touchStartX = ref(0);
 
+const openFullscreen = (image, section) => {
+  selectedImage.value = image;
+  selectedSection.value = section;
+  showFullscreen.value = true;
+  uni.hideTabBar();
+};
+
+const closeFullscreen = () => {
+  showFullscreen.value = false;
+  uni.showTabBar();
+};
+
+const handleTouchStart = (e) => {
+  touchStartX.value = e.touches[0].clientX;
+};
+
+const handleTouchEnd = (e) => {
+  const touchEndX = e.changedTouches[0].clientX;
+  const deltaX = touchEndX - touchStartX.value;
+  if (deltaX < -50) { // 左滑超过50像素触发
+    closeFullscreen();
+  }
+};
 const sections = ref([
 	{
 		title: '富士胶韵',
@@ -277,6 +350,83 @@ uni-scroll-view .uni-scroll-view::-webkit-scrollbar {
 			}
 		}
 	}
+}
+// 全屏容器样式
+.fullscreen-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: scaleUp 0.3s ease;
+}
+
+// 复用原有photo-frame样式
+.fullscreen-frame {
+  width: 90%;
+  max-width: 800rpx;
+  margin: 0 auto;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.1);
+  
+  // 手机全屏样式
+  .image-container {
+    padding: 20rpx;
+    
+    .image-content {
+      width: 100% !important;
+      height: 70vh;
+      border-radius: 12rpx;
+    }
+  }
+
+  // 电脑全屏样式
+  &.pc-frame {
+    max-width: 1200rpx;
+    
+    .pc-container {
+      padding: 30rpx;
+      
+      .pc-content {
+        height: 60vh;
+        border-radius: 16rpx;
+      }
+    }
+    
+    .pc-footer {
+      padding: 30rpx 40rpx;
+      
+      .watermark-brand-logo {
+        width: 160rpx !important;
+        height: 48rpx !important;
+      }
+      
+      .watermark-line {
+        &:nth-child(2) {
+          font-size: 28rpx !important;
+        }
+        &:nth-child(3) {
+          font-size: 26rpx !important;
+        }
+      }
+    }
+  }
+}
+
+// 动画效果
+@keyframes scaleUp {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .edgeInsetBottom {

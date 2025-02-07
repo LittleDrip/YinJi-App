@@ -698,6 +698,8 @@ uni-scroll-view .uni-scroll-view::-webkit-scrollbar {
 }
 .container {
   font-family: "MiSans";
+  overflow: hidden;
+  /* 隐藏滚动条并禁用滚动 */
 }
 .content {
   padding: 0.625rem;
@@ -817,7 +819,7 @@ uni-scroll-view .uni-scroll-view::-webkit-scrollbar {
   padding: 0.375rem;
 }
 .pc-scroll .photo-frame .pc-container .pc-content {
-  height: 11.875rem;
+  height: 14.375rem;
   width: 80vw;
 }
 .pc-scroll .photo-frame .frame-footer {
@@ -836,6 +838,68 @@ uni-scroll-view .uni-scroll-view::-webkit-scrollbar {
 }
 .pc-scroll .photo-frame .frame-footer .watermark-line:nth-child(3) {
   font-size: 0.6875rem;
+}
+.fullscreen-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: white;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.fullscreen-frame {
+  width: 90%;
+  max-width: 25rem;
+  margin: 0 auto;
+  box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+}
+.fullscreen-frame .image-container {
+  padding: 0.625rem;
+  display: flex !important;
+  justify-content: center;
+}
+.fullscreen-frame .image-container .image-content {
+  width: 80% !important;
+  height: 70vh;
+  border-radius: 0.375rem;
+}
+.fullscreen-frame.pc-frame {
+  max-width: 37.5rem;
+}
+.fullscreen-frame.pc-frame .pc-container {
+  padding: 0.9375rem;
+}
+.fullscreen-frame.pc-frame .pc-container .pc-content {
+  height: 14.375rem;
+  width: 80vw !important;
+}
+.fullscreen-frame.pc-frame .pc-footer {
+  padding: 0.9375rem 1.25rem;
+}
+.fullscreen-frame.pc-frame .pc-footer .watermark-brand-logo {
+  width: 5rem !important;
+  height: 1.5rem !important;
+}
+.fullscreen-frame.pc-frame .pc-footer .watermark-line:nth-child(2) {
+  font-size: 0.875rem !important;
+}
+.fullscreen-frame.pc-frame .pc-footer .watermark-line:nth-child(3) {
+  font-size: 0.8125rem !important;
+}
+@keyframes fade-in {
+from {
+    transform: scale(0.5);
+    opacity: 0;
+}
+to {
+    transform: scale(1);
+    opacity: 1;
+}
 }
 .edgeInsetBottom {
   width: 23.4375rem;

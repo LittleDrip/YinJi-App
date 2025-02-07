@@ -12,8 +12,10 @@
 			"path": "pages/template/index",
 			"style": {
 				"navigationBarTitleText": "模版库",
-				"navigationStyle": "custom"
-				
+				"navigationStyle": "custom",
+				"app-plus": {
+					"scrollIndicator": "none"
+				}
 			}
 		},
 		{
@@ -38,12 +40,6 @@
 				"navigationBarTitleText" : "2",
 				"navigationStyle": "custom"
 				}
-		},
-		{
-			"path": "pages/watermark/image-detail",
-			"style": {
-				"navigationStyle": "custom"
-			}
 		}
 	],
 	"globalStyle": {
